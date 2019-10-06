@@ -1,0 +1,19 @@
+{
+        "compilerOptions": {
+                "baseUrl": "./",
+                "target": "es2018",
+                "noImplicitAny": true,
+                "removeComments": true,
+                "preserveConstEnums": true,
+                "sourceMap": false,
+                "alwaysStrict": true
+        },
+        "include": [
+                "./CompactingArray.ts"
+        ],
+        "exclude": [
+                "build",
+                "node_modules",
+                "**/*.spec.ts"
+        ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "compactingarray",
+  "version": "1.0.0",
+  "description": "Self-compacting array-allotment system",
+  "main": "CompactingArray.js",
+  "scripts": {
+    "test": "new CompactingArray()"
+  },
+  "keywords": [
+    "array"
+  ],
+  "author": "alcacode",
+  "license": "GPLv2",
+  "private": true
+}
