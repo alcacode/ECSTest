@@ -1,0 +1,189 @@
+{
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$id": "#/components/schema",
+        "definitions": {
+                "propertyname": {
+                        "type": "string",
+                        "minLength": 1,
+                        "pattern": "^([a-zA-Z_]{1}[0-9a-zA-Z-_]*)$",
+                        "default": ""
+                },
+                "componenttype": {
+                        "type": "string",
+                        "title": "Component data type",
+                        "description": "Determines how data is stored and read. It is _essential_ you pick a data type that fit the intended use.",
+                        "default": "auto",
+                        "enum": [
+                                "auto",
+                                "char",
+                                "int8",
+                                "uint8",
+                                "int16",
+                                "uint16",
+                                "int32",
+                                "uint32",
+                                "float32",
+                                "float64"
+                        ]
+                },
+                "int8_limits": {
+                        "$id": "#int8_limits",
+                        "exclusiveMaximum": 128,
+                        "exclusiveMinimum": -128
+                },
+                "uint8_limits": {
+                        "$id": "#uint8_limits",
+                        "exclusiveMaximum": 256,
+                        "exclusiveMinimum": 0
+                },
+                "int16_limits": {
+                        "$id": "#int16_limits",
+                        "exclusiveMaximum": 32768,
+                        "exclusiveMinimum": -32768
+                },
+                "uint16_limits": {
+                        "$id": "#uint16_limits",
+                        "exclusiveMaximum": 65536,
+                        "exclusiveMinimum": 0
+                },
+                "int32_limits": {
+                        "$id": "#int32_limits",
+                        "exclusiveMaximum": 2147483648,
+                        "exclusiveMinimum": -2147483648
+                },
+                "uint32_limits": {
+                        "$id": "#uint32_limits",
+                        "exclusiveMaximum": 4294967296,
+                        "exclusiveMinimum": 0
+                }
+        },
+        "type": "object",
+        "title": "Component Schema",
+        "requred": [
+                "name"
+        ],
+        "properties": {
+                "name": {
+                        "$ref": "#/definitions/propertyname"
+                },
+                "data": {
+                        "$id": "#/properties/data",
+                        "type": "object",
+                        "additionalProperties": {
+                                "type": "object",
+                                "properties": {
+                                        "name": {
+                                                "$ref": "#/definitions/propertyname",
+                                                "maxLength": 64
+                                        },
+                                        "type": {
+                                                "$ref": "#/definitions/componenttype"
+                                        },
+                                        "isArray": {
+                                                "type": "boolean",
+                                                "default": false,
+                                                "title": "Declares data as array",
+                                                "description": "Optional. Default: false."
+                                        },
+                                        "fixedLength": {
+                                                "type": "number",
+                                                "default": 1,
+                                                "multipleOf": 1,
+                                                "minimum": 1,
+                                                "title": "Declare fixed data size",
+                                                "description": "Allows the parser to not store individual array lengths. Improves performance and decreases memory utilization.\nIf set 'array' MUST be set to 'true'."
+                                        },
+                                        "minVal": {
+                                                "type": "number",
+                                                "title": "Minimum Value",
+                                                "description": "Limits how minimum value this property can take on."
+                                        },
+                                        "maxVal": {
+                                                "type": "number",
+                                                "title": "Maximum Value",
+                                                "description": "Limits how maximum value this property can take on."
+                                        }
+                                },
+                                "allOf": [
+                                        {
+                                                "if": { "properties": { "fixedLength": { "const": 1 } } },
+                                                "then": { "properties": { "isArray": { "const": false } } },
+                                                "else": { "properties": { "isArray": { "const": true } }, "required": ["isArray"] }
+                                        },
+                                        {
+                                                "if": { "properties": { "type": { "const": "int8" } } },
+                                                "then": { 
+                                                        "properties": {
+                                                                "minVal": { "$ref": "#int8_limits" },
+                                                                "maxVal": { "$ref": "#int8_limits" }
+                                                        }
+                                                }
+                                        },
+                                        {
+                                                "if": { "anyOf": [
+                                                        { "properties": { "type": { "const": "char" } } },
+                                                        { "properties": { "type": { "const": "uint8" } } }
+                                                ]},
+                                                "then": { 
+                                                        "properties": {
+                                                                "minVal": { "$ref": "#uint8_limits" },
+                                                                "maxVal": { "$ref": "#uint8_limits" }
+                                                        }
+                                                }
+                                        },
+                                        {
+                                                "if": { "properties": { "type": { "const": "int16" } } },
+                                                "then": { 
+                                                        "properties": {
+                                                                "minVal": { "$ref": "#int16_limits" },
+                                                                "maxVal": { "$ref": "#int16_limits" }
+                                                        }
+                                                }
+                                        },
+                                        {
+                                                "if": { "properties": { "type": { "const": "uint16" } } },
+                                                "then": { 
+                                                        "properties": {
+                                                                "minVal": { "$ref": "#uint16_limits" },
+                                                                "maxVal": { "$ref": "#uint16_limits" }
+                                                        }
+                                                }
+                                        },
+                                        {
+                                                "if": { "properties": { "type": { "const": "int32" } } },
+                                                "then": { 
+                                                        "properties": {
+                                                                "minVal": { "$ref": "#int32_limits" },
+                                                                "maxVal": { "$ref": "#int32_limits" }
+                                                        }
+                                                }
+                                        },
+                                        {
+                                                "if": { "anyOf":
+                                                        [
+                                                                { "properties": { "type": { "const": "uint32" } } },
+                                                                { "properties": { "type": { "const": "float32" } } }
+                                                        ]
+                                                },
+                                                "then": { 
+                                                        "properties": {
+                                                                "minVal": { "$ref": "#uint32_limits" },
+                                                                "maxVal": { "$ref": "#uint32_limits" }
+                                                        }
+                                                }
+                                        },
+                                        {
+                                                "if": { "properties": { "type": { "const": "float64" } } },
+                                                "then": { 
+                                                        "properties": {
+                                                                "minVal": { "exclusiveMaximum": 9007199254740992, "exclusiveMinimum": 0 },
+                                                                "maxVal": { "exclusiveMaximum": 9007199254740992, "exclusiveMinimum": 0 }
+                                                        }
+                                                }
+                                        }
+                                ],
+                                "required": ["type"]
+                        }
+                }
+        }
+}
